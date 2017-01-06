@@ -11,6 +11,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -24,13 +25,26 @@ import org.json.JSONException;
 public class MangaDownloader extends javax.swing.JFrame {
      public static Util util = new Util();
      public option opt;
+     private String[] strings;
+     private ArrayList<Integer>searchIndex;
+     private String searchVal ="";
+     private int searchIndexitr = 0;
     /**
      * Creates new form MangaDownloader
      */
     public MangaDownloader() throws JSONException, IOException {
+//        Init initialize = new Init();
+//        initialize.setVisible(true);
         this.opt = new option();
+        try{
+            Thread.sleep(4000);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        searchIndex = new ArrayList<Integer>();
+//        initialize.setVisible(false);
         initComponents();
-        String[] strings = this.opt.getListManga();
+        strings = this.opt.getListManga();
         System.out.println(strings);
         jList1.setModel(new javax.swing.AbstractListModel<String>() {      
             public int getSize() { return strings.length; }
@@ -55,7 +69,7 @@ public class MangaDownloader extends javax.swing.JFrame {
         listPane = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox<>();
         searchPane = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        searchField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         mangaListPane = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -78,14 +92,25 @@ public class MangaDownloader extends javax.swing.JFrame {
         );
 
         listPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Manga List", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
-        listPane.setLayout(new java.awt.GridLayout());
+        listPane.setLayout(new java.awt.GridLayout(1, 0));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         listPane.add(jComboBox1);
 
         searchPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
         searchPane.setLayout(new javax.swing.BoxLayout(searchPane, javax.swing.BoxLayout.LINE_AXIS));
-        searchPane.add(jTextField1);
+
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchFieldKeyPressed(evt);
+            }
+        });
+        searchPane.add(searchField);
 
         ImageIcon imageIcon = new javax.swing.ImageIcon(getClass().getResource("/downloader/Search-button.png")); // load the image to a imageIcon
         Image image = imageIcon.getImage(); // transform it
@@ -95,6 +120,11 @@ public class MangaDownloader extends javax.swing.JFrame {
         jButton1.setToolTipText("");
         jButton1.setBorder(null);
         jButton1.setBorderPainted(false);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         searchPane.add(jButton1);
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
@@ -226,8 +256,52 @@ public class MangaDownloader extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void searchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyPressed
+        if (evt.getKeyCode() == 10){
+            searchMangaList();
+        }
+    }//GEN-LAST:event_searchFieldKeyPressed
+
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
+        searchMangaList();
+    }//GEN-LAST:event_searchFieldActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        searchMangaList();
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    public void searchMangaList(){
+    if(searchVal.contentEquals("") || !(searchVal.equalsIgnoreCase(searchField.getText().toString().toLowerCase()))){
+                searchIndex.clear();
+                searchIndexitr = 0;
+                String value = searchField.getText().toString().toLowerCase();
+                searchVal = value;
+                for(int i = 0 ; i < strings.length; i++){
+                String title = strings[i].toLowerCase();
+                    if(title.contains(value)){
+                       searchIndex.add(i);
+                    }
+                }
+                if(searchIndex.size() > 0){
+                    jList1.setSelectedIndex(searchIndex.get(searchIndexitr));
+                    jList1.ensureIndexIsVisible(jList1.getSelectedIndex());
+                }
+                
+            }else if(searchVal.equalsIgnoreCase(searchField.getText().toString().toLowerCase())){
+                searchIndexitr++;
+                if(searchIndexitr == (searchIndex.size()-1) ){
+                    searchIndexitr--;
+                }
+               if(searchIndex.size() > 0){
+                    jList1.setSelectedIndex(searchIndex.get(searchIndexitr));
+                    jList1.ensureIndexIsVisible(jList1.getSelectedIndex());
+                }
+            }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -278,11 +352,11 @@ public class MangaDownloader extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel left;
     private javax.swing.JPanel listPane;
     private javax.swing.JPanel mangaListPane;
     private javax.swing.JPanel right;
+    private javax.swing.JTextField searchField;
     private javax.swing.JPanel searchPane;
     private javax.swing.JPanel top;
     // End of variables declaration//GEN-END:variables
