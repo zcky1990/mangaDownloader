@@ -50,25 +50,8 @@ public class option {
         this.mangaList = mangaList;
     }
     
-    public option() throws JSONException, IOException{
-     isSuccesSetConfig = false;
-    //do something here
-     String test = util.requestFile("option");
-
-     if(test.equalsIgnoreCase("fileNotFound")){
-        defaultMangaSite = "MangaHere";
-     }else {
-         
-     }
-     config = new DownloaderConfig();
-     config.setMangaConfig(defaultMangaSite);
-
-     if(!config.getMangaSite().isEmpty()){
-         isSuccesSetConfig = true;
-         
-     }
-     getmangaList();
-     generateListItem();
+    public option(DownloaderConfig config) throws JSONException, IOException{
+      this.config = config;
     }
     
     public void getmangaList() throws JSONException, IOException{
@@ -85,6 +68,38 @@ public class option {
            toppings[i] = this.mangaList.get(i).getTitle();
         }
         this.listManga = toppings;
+    }
+
+    public String getDefaultMangaSite() {
+        return defaultMangaSite;
+    }
+
+    public void setDefaultMangaSite(String defaultMangaSite) {
+        this.defaultMangaSite = defaultMangaSite;
+    }
+
+    public String getPATH() {
+        return PATH;
+    }
+
+    public void setPATH(String PATH) {
+        this.PATH = PATH;
+    }
+
+    public DownloaderConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(DownloaderConfig config) {
+        this.config = config;
+    }
+
+    public MangaUtility getUtility() {
+        return utility;
+    }
+
+    public void setUtility(MangaUtility utility) {
+        this.utility = utility;
     }
     
 }

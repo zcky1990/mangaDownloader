@@ -5,7 +5,10 @@
  */
 package downloader;
 
+import Util.MangaDownloaderAPI;
+import Util.MangaDownloaderController;
 import Util.Util;
+import config.DownloaderConfig;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -15,6 +18,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import model.Manga;
+import model.MangaDetails;
 import option.option;
 import org.json.JSONException;
 
@@ -24,34 +29,75 @@ import org.json.JSONException;
  */
 public class MangaDownloader extends javax.swing.JFrame {
      public static Util util = new Util();
+     public MangaDownloaderAPI controller = new MangaDownloaderAPI();
      public option opt;
      private String[] strings;
      private ArrayList<Integer>searchIndex;
      private String searchVal ="";
      private int searchIndexitr = 0;
+     private DownloaderConfig config;
     /**
      * Creates new form MangaDownloader
      */
-    public MangaDownloader() throws JSONException, IOException {
-//        Init initialize = new Init();
-//        initialize.setVisible(true);
-        this.opt = new option();
-        try{
-            Thread.sleep(4000);
-        }catch(InterruptedException e){
-            e.printStackTrace();
+     
+    public boolean getConfig() throws JSONException, IOException{
+        boolean isSuccesSetConfig = false;
+        
+        //get option configuration to get selected mangaSite
+        String optionConfig = util.requestFile("option");
+        String defaultMangaSite = null;
+        if(optionConfig.equalsIgnoreCase("fileNotFound")){
+            defaultMangaSite = "MangaHere";
+        }else {
+         
         }
-        searchIndex = new ArrayList<Integer>();
-//        initialize.setVisible(false);
-        initComponents();
+     
+        //set mangasite to config
+        this.config.setMangaConfig(defaultMangaSite);
+        System.out.println("getMangaSite "+ this.config.getMangaSite());
+        this.opt.setDefaultMangaSite(defaultMangaSite);
+        
+        //
+        String mangaList = util.requestFile(this.config.getMangaSite());
+        System.out.println("mangaList.length()" + mangaList.length());
+        
+        if(!this.config.getMangaSite().isEmpty() && mangaList.length() > 12){
+            isSuccesSetConfig = true;
+        }
+     
+        if(isSuccesSetConfig){
+            this.opt.getmangaList();
+            this.opt.generateListItem();
+        }
+      
+     return isSuccesSetConfig;
+    }
+     
+    public MangaDownloader() throws JSONException, IOException {
+         this.config = new DownloaderConfig();
+         this.opt = new option(this.config);
+         boolean isSuccesGetConfig = this.getConfig();
+          
+         System.out.println("isSuccesGetConfig " + isSuccesGetConfig);
+         if(!isSuccesGetConfig){
+            Init initialize = new Init();
+            initialize.setVisible(true);
+            initialize.setLabelText("Generating Manga List....");
+            this.opt.getmangaList();
+            this.opt.generateListItem();
+            initialize.setLabelText("Generating Manga List Completed.");
+            initialize.setVisible(false);
+         }
+         
         strings = this.opt.getListManga();
-        System.out.println(strings);
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {      
+        searchIndex = new ArrayList<Integer>();
+        initComponents();
+        listOfManga.setModel(new javax.swing.AbstractListModel<String>() {      
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        jScrollPane1.setViewportView(jList1);
+        listOfManga.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane1.setViewportView(listOfManga);
     }
 
     /**
@@ -73,7 +119,7 @@ public class MangaDownloader extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         mangaListPane = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        listOfManga = new javax.swing.JList<>();
         right = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -100,11 +146,6 @@ public class MangaDownloader extends javax.swing.JFrame {
         searchPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
         searchPane.setLayout(new javax.swing.BoxLayout(searchPane, javax.swing.BoxLayout.LINE_AXIS));
 
-        searchField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchFieldActionPerformed(evt);
-            }
-        });
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 searchFieldKeyPressed(evt);
@@ -127,13 +168,19 @@ public class MangaDownloader extends javax.swing.JFrame {
         });
         searchPane.add(jButton1);
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        listOfManga.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        listOfManga.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        jScrollPane1.setViewportView(jList1);
+        listOfManga.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        listOfManga.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listOfMangaMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(listOfManga);
 
         javax.swing.GroupLayout mangaListPaneLayout = new javax.swing.GroupLayout(mangaListPane);
         mangaListPane.setLayout(mangaListPaneLayout);
@@ -265,14 +312,38 @@ public class MangaDownloader extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_searchFieldKeyPressed
 
-    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-        searchMangaList();
-    }//GEN-LAST:event_searchFieldActionPerformed
-
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         searchMangaList();
     }//GEN-LAST:event_jButton1MouseClicked
 
+    private void listOfMangaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfMangaMouseClicked
+             //TODO add your handling code here:
+             int index =  listOfManga.getSelectedIndex();
+             this.getSelectedMangaDescription(index);
+
+    }//GEN-LAST:event_listOfMangaMouseClicked
+
+    public void getSelectedMangaDescription(int index){
+        try {
+             //TODO add your handling code here:
+             System.out.println("index " + index);
+             ArrayList<Manga> mangaList = this.opt.getMangaList();
+             Manga manga = mangaList.get(index);
+             System.out.println("url " + manga.getUrlManga());
+             System.out.println("title Manga " + manga.getTitle());
+             
+             //get Manga Description
+             MangaDetails detailsManga = this.controller.getMangaDescription( manga.getUrlManga(),this.config.getDescription());
+             manga.setMangaDetails(detailsManga);
+            
+             System.out.println(manga.getMangaDetails().getAltName());
+             MangaDetailsFrame descFrame = new MangaDetailsFrame(manga.getTitle(),  manga.getMangaDetails());
+             descFrame.setVisible(true);
+         } catch (JSONException ex) {
+             Logger.getLogger(MangaDownloader.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
+    
     public void searchMangaList(){
     if(searchVal.contentEquals("") || !(searchVal.equalsIgnoreCase(searchField.getText().toString().toLowerCase()))){
                 searchIndex.clear();
@@ -286,8 +357,8 @@ public class MangaDownloader extends javax.swing.JFrame {
                     }
                 }
                 if(searchIndex.size() > 0){
-                    jList1.setSelectedIndex(searchIndex.get(searchIndexitr));
-                    jList1.ensureIndexIsVisible(jList1.getSelectedIndex());
+                    listOfManga.setSelectedIndex(searchIndex.get(searchIndexitr));
+                    listOfManga.ensureIndexIsVisible(listOfManga.getSelectedIndex());
                 }
                 
             }else if(searchVal.equalsIgnoreCase(searchField.getText().toString().toLowerCase())){
@@ -296,8 +367,8 @@ public class MangaDownloader extends javax.swing.JFrame {
                     searchIndexitr--;
                 }
                if(searchIndex.size() > 0){
-                    jList1.setSelectedIndex(searchIndex.get(searchIndexitr));
-                    jList1.ensureIndexIsVisible(jList1.getSelectedIndex());
+                    listOfManga.setSelectedIndex(searchIndex.get(searchIndexitr));
+                    listOfManga.ensureIndexIsVisible(listOfManga.getSelectedIndex());
                 }
             }
     }
@@ -348,11 +419,11 @@ public class MangaDownloader extends javax.swing.JFrame {
     private javax.swing.JPanel bottom;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JPanel left;
+    private javax.swing.JList<String> listOfManga;
     private javax.swing.JPanel listPane;
     private javax.swing.JPanel mangaListPane;
     private javax.swing.JPanel right;
