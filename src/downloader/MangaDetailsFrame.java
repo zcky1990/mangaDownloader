@@ -7,8 +7,10 @@ package downloader;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import model.Chapter;
 import model.MangaDetails;
 
 /**
@@ -19,13 +21,16 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private String title;
     private String artistTextStr;
     private String authorsTextStr;
-     private String descFieldStr;
-      private String genreTextStr;
-       private String rankTextStr;
-        private String ratingTextStr;
-         private String statusTextStr;
-          private String titleTextStr;
+    private String descFieldStr;
+    private String genreTextStr;
+    private String rankTextStr;
+    private String ratingTextStr;
+    private String statusTextStr;
+    private String titleTextStr;
     private String imageUrl;
+    private String[] chapterListMangaTitle;
+    private ArrayList<Chapter> chapterListManga;
+    private String[] selectedChapterListMangaTitle;
     /**
      * Creates new form MangaDetailsFrame
      */
@@ -40,14 +45,27 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         this.statusTextStr = detailsManga.getStatus();
         this.titleTextStr = detailsManga.getAltName();
         this.imageUrl = detailsManga.getUrlImageCover();
+        this.setChapterList(detailsManga);
         System.out.println("this.imageUrl " + this.imageUrl);
         initComponents();
+        this.setMangaChapter(this.chapterListMangaTitle);
         this.setTextDesciption(this.artistTextStr, this.authorsTextStr, this.descFieldStr, this.genreTextStr, this.rankTextStr, this.ratingTextStr,this.statusTextStr, this.titleTextStr);
         this.setImageCover(this.imageUrl);
         this.setTitle(title);
         
     }
     
+    public void setChapterList(MangaDetails detailsManga){
+        chapterListManga = detailsManga.getChapters();
+        chapterListMangaTitle = new String[chapterListManga.size()];
+        int Index = 0;
+        for(int i = chapterListManga.size()-1 ; i >=0; i-- ){
+            Chapter mangachapter = chapterListManga.get(i);
+            chapterListMangaTitle[Index] = mangachapter.getChapterTitle();
+            Index++;
+        }
+    
+    }
       public MangaDetailsFrame() {
         initComponents();
     }
@@ -66,7 +84,7 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         coverImage = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        qwe = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -92,8 +110,18 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         rankText = new javax.swing.JLabel();
         ratingText = new javax.swing.JLabel();
         descField = new javax.swing.JTextField();
+        botomPanel = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        removeBtn = new javax.swing.JButton();
+        addBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        chapterList = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        downloadChapter = new javax.swing.JList<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -113,17 +141,19 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 298, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addGap(3, 3, 3)
-                    .addComponent(coverImage, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(coverImage, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(20, 20, 20)))
         );
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 9, -1, 299));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel2.setText("Alternative Name");
+        qwe.setText("Alternative Name");
 
         jLabel3.setText("Authors                ");
 
@@ -146,7 +176,7 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(qwe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
                     .addComponent(jLabel7)
@@ -164,7 +194,7 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel2)
+                .addComponent(qwe)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -334,26 +364,65 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(305, 9, -1, -1));
+
+        botomPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        removeBtn.setText("Remove");
+        removeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                removeBtnMouseClicked(evt);
+            }
+        });
+
+        addBtn.setText("Add");
+        addBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addBtnMouseClicked(evt);
+            }
+        });
+
+        jScrollPane1.setViewportView(chapterList);
+
+        jScrollPane2.setViewportView(downloadChapter);
+
+        javax.swing.GroupLayout botomPanelLayout = new javax.swing.GroupLayout(botomPanel);
+        botomPanel.setLayout(botomPanelLayout);
+        botomPanelLayout.setHorizontalGroup(
+            botomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(botomPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(botomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(removeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                .addGap(12, 12, 12))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(9, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(230, Short.MAX_VALUE))
+        botomPanelLayout.setVerticalGroup(
+            botomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, botomPanelLayout.createSequentialGroup()
+                .addContainerGap(107, Short.MAX_VALUE)
+                .addComponent(addBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(removeBtn)
+                .addGap(131, 131, 131))
+            .addGroup(botomPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(botomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
+
+        jPanel1.add(botomPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 314, 781, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -361,7 +430,7 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 7, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,8 +440,23 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void addBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addBtnMouseClicked
+        int[] selectedChapter = chapterList.getSelectedIndices();
+        this.generateSelectedChapterModel(selectedChapter);
+        this.setSelectedMangaChapter(selectedChapterListMangaTitle);
+    }//GEN-LAST:event_addBtnMouseClicked
+
+    private void removeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeBtnMouseClicked
+        // TODO add your handling code here:
+        int[] selectedChapter = downloadChapter.getSelectedIndices();
+        this.removeSelectedChapter(selectedChapter);
+        this.setSelectedMangaChapter(selectedChapterListMangaTitle);
+    }//GEN-LAST:event_removeBtnMouseClicked
+
+    
     /**
      * @param args the command line arguments
      */
@@ -434,11 +518,61 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
                 }
 
     }
+    
+    public void setMangaChapter(String [] strings){
+       chapterList.setModel(new javax.swing.AbstractListModel<String>() {      
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        chapterList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane1.setViewportView(chapterList);
+    }
+    
+     public void setSelectedMangaChapter(String [] strings){
+       downloadChapter.setModel(new javax.swing.AbstractListModel<String>() {      
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        downloadChapter.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane1.setViewportView(chapterList);
+    }
+     
+    public void generateSelectedChapterModel (int [] listChapter){
+        selectedChapterListMangaTitle = new String [listChapter.length];
+        for(int i = 0 ; i < listChapter.length; i++){
+            int index = listChapter[i];
+            selectedChapterListMangaTitle[i] = chapterListMangaTitle[index];
+        }
+    
+    }
+    
+    public void removeSelectedChapter(int []listChapter){
+     ArrayList<String> temp = new ArrayList<String>();
+      //  selectedChapterListMangaTitle = new String [listChapter.length];
+             for(int j = 0 ; j < listChapter.length; j++){
+                 int index = listChapter[j];
+            selectedChapterListMangaTitle[index]="";
+            }
+            for(int i = 0 ; i < selectedChapterListMangaTitle.length; i++){
+              String chapterTitle = selectedChapterListMangaTitle[i];
+              if(!chapterTitle.equalsIgnoreCase("")){
+                  temp.add(chapterTitle);
+              }
+            }
+            String [] list = new String [temp.size()];
+            for(int i = 0; i < temp.size(); i++){
+                list[i] = temp.get(i);
+            }
+           selectedChapterListMangaTitle = list;}
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addBtn;
     private javax.swing.JLabel artistText;
     private javax.swing.JLabel authorsText;
+    private javax.swing.JPanel botomPanel;
+    private javax.swing.JList<String> chapterList;
     private javax.swing.JLabel coverImage;
     private javax.swing.JTextField descField;
+    private javax.swing.JList<String> downloadChapter;
     private javax.swing.JLabel genreText;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -448,7 +582,6 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -462,8 +595,13 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel qwe;
     private javax.swing.JLabel rankText;
     private javax.swing.JLabel ratingText;
+    private javax.swing.JButton removeBtn;
     private javax.swing.JLabel statusText;
     private javax.swing.JLabel titleText;
     // End of variables declaration//GEN-END:variables

@@ -18,8 +18,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import model.Chapter;
 import model.Manga;
 import model.MangaDetails;
+import model.Pages;
 import option.option;
 import org.json.JSONException;
 
@@ -334,11 +336,15 @@ public class MangaDownloader extends javax.swing.JFrame {
              
              //get Manga Description
              MangaDetails detailsManga = this.controller.getMangaDescription( manga.getUrlManga(),this.config.getDescription());
-             manga.setMangaDetails(detailsManga);
+             
+             //get Manga Chapters
+            ArrayList<Chapter> chapterlist = this.controller.getMangaChapter(manga.getUrlManga(), this.config.getChapter());
             
-             System.out.println(manga.getMangaDetails().getAltName());
-             MangaDetailsFrame descFrame = new MangaDetailsFrame(manga.getTitle(),  manga.getMangaDetails());
-             descFrame.setVisible(true);
+            detailsManga.setChapters(chapterlist);
+            manga.setMangaDetails(detailsManga);
+           
+            MangaDetailsFrame descFrame = new MangaDetailsFrame(manga.getTitle(),  manga.getMangaDetails());
+            descFrame.setVisible(true);
          } catch (JSONException ex) {
              Logger.getLogger(MangaDownloader.class.getName()).log(Level.SEVERE, null, ex);
          }
