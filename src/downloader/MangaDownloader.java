@@ -56,12 +56,12 @@ public class MangaDownloader extends javax.swing.JFrame {
      
         //set mangasite to config
         this.config.setMangaConfig(defaultMangaSite);
-        System.out.println("getMangaSite "+ this.config.getMangaSite());
+       // System.out.println("getMangaSite "+ this.config.getMangaSite());
         this.opt.setDefaultMangaSite(defaultMangaSite);
         
         //
         String mangaList = util.requestFile(this.config.getMangaSite());
-        System.out.println("mangaList.length()" + mangaList.length());
+       // System.out.println("mangaList.length()" + mangaList.length());
         
         if(!this.config.getMangaSite().isEmpty() && mangaList.length() > 12){
             isSuccesSetConfig = true;
@@ -80,7 +80,6 @@ public class MangaDownloader extends javax.swing.JFrame {
          this.opt = new option(this.config);
          boolean isSuccesGetConfig = this.getConfig();
           
-         System.out.println("isSuccesGetConfig " + isSuccesGetConfig);
          if(!isSuccesGetConfig){
             Init initialize = new Init();
             initialize.setVisible(true);
@@ -328,11 +327,11 @@ public class MangaDownloader extends javax.swing.JFrame {
     public void getSelectedMangaDescription(int index){
         try {
              //TODO add your handling code here:
-             System.out.println("index " + index);
+            // System.out.println("index " + index);
              ArrayList<Manga> mangaList = this.opt.getMangaList();
              Manga manga = mangaList.get(index);
-             System.out.println("url " + manga.getUrlManga());
-             System.out.println("title Manga " + manga.getTitle());
+            // System.out.println("url " + manga.getUrlManga());
+            // System.out.println("title Manga " + manga.getTitle());
              
              //get Manga Description
              MangaDetails detailsManga = this.controller.getMangaDescription( manga.getUrlManga(),this.config.getDescription());
