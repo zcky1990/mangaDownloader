@@ -5,7 +5,11 @@
         <group>
             <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/downloader/MangaDownloader.java</file>
             <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/downloader/MangaDetailsFrame.java</file>
+            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/Util/DownloadUtil.java</file>
+            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/config/DownloaderConfig.java</file>
             <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/option/option.java</file>
+            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/downloader/Option.java</file>
+            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/Util/Util.java</file>
         </group>
     </open-files>
 </project-private>

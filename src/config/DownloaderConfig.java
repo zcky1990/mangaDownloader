@@ -23,6 +23,10 @@ public class DownloaderConfig {
     private String chapter;
     private String pages;
     private String image;
+    private JSONArray mangaConfiguration;
+    private JSONObject downloaderConfiguration;
+    private String path;
+    private String [] mangaList;
     
     public void setMangaConfig(String defaultMangaSite) throws JSONException, IOException{
         String test = util.requestFile("config_manga");
@@ -30,14 +34,20 @@ public class DownloaderConfig {
             util.generateConfig();
             test = util.requestFile("config_manga");
         }
-        JSONArray config;
-        if(!test.equalsIgnoreCase("fileNotFound")){
-            config = new JSONArray(test);
-        }else {
-            config = new JSONArray();
+        
+        String downloadConfig = util.requestFile("configDownload");
+        if(downloadConfig.equalsIgnoreCase("fileNotFound")){
+            util.generateSystemSetting();
+            downloadConfig = util.requestFile("configDownload");
         }
-        for(int i = 0 ; i < config.length(); i++){
-            JSONObject mangaConfig = config.getJSONObject(i);
+               
+        if(!test.equalsIgnoreCase("fileNotFound")){
+            mangaConfiguration = new JSONArray(test);
+        }else {
+            mangaConfiguration = new JSONArray();
+        }
+        for(int i = 0 ; i < mangaConfiguration.length(); i++){
+            JSONObject mangaConfig = mangaConfiguration.getJSONObject(i);
             String siteManga = mangaConfig.getString("manga_site");
             String url = mangaConfig.getString("manga_url");
             JSONObject siteConfig = mangaConfig.getJSONObject("config");
@@ -52,6 +62,28 @@ public class DownloaderConfig {
                 break;
             }
         }
+        
+        if(!downloadConfig.equalsIgnoreCase("fileNotFound")){
+            downloaderConfiguration = new JSONObject(downloadConfig);
+        }else {
+            downloaderConfiguration = new JSONObject();
+        }
+        
+        if(downloaderConfiguration.has("destinationPath")){
+            path = downloaderConfiguration.getString("destinationPath");
+        }else {
+            path = System.getProperty("user.dir").toString();
+        }
+        
+        if(downloaderConfiguration.has("mangaList")){
+            JSONArray mangaListArray =  downloaderConfiguration.getJSONArray("mangaList");
+            System.out.println(mangaListArray.get(0));
+            mangaList = new String [mangaListArray.length()];
+            for(int i= 0 ;i < mangaListArray.length(); i++){
+                mangaList[i] = mangaListArray.get(i).toString();
+            }
+        }
+        
     }
 
     public String getMangaSite() {
@@ -108,6 +140,38 @@ public class DownloaderConfig {
 
     public void setManga_url(String manga_url) {
         this.manga_url = manga_url;
+    }
+
+    public JSONArray getMangaConfiguration() {
+        return mangaConfiguration;
+    }
+
+    public void setMangaConfiguration(JSONArray mangaConfiguration) {
+        this.mangaConfiguration = mangaConfiguration;
+    }
+
+    public JSONObject getDownloaderConfiguration() {
+        return downloaderConfiguration;
+    }
+
+    public void setDownloaderConfiguration(JSONObject downloaderConfiguration) {
+        this.downloaderConfiguration = downloaderConfiguration;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String[] getMangaList() {
+        return mangaList;
+    }
+
+    public void setMangaList(String[] mangaList) {
+        this.mangaList = mangaList;
     }
     
     

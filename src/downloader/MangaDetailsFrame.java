@@ -5,20 +5,31 @@
  */
 package downloader;
 
+import Util.DownloadUtil;
+import config.DownloaderConfig;
+import downloader.MangaDownloader.downloadListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import model.Chapter;
+import model.Download;
+import model.Manga;
 import model.MangaDetails;
 
 /**
  *
  * @author soeltan_z
  */
-public class MangaDetailsFrame extends javax.swing.JFrame {
+public class MangaDetailsFrame extends javax.swing.JFrame implements downloadListener{
     private String title;
     private String artistTextStr;
     private String authorsTextStr;
@@ -33,10 +44,18 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private ArrayList<Chapter> chapterListManga;
     private ArrayList<Chapter> selectedChapterDownload;
     private String[] selectedChapterListMangaTitle;
+    private MangaDetails detailsManga;
+    private Manga manga;
+    
     /**
      * Creates new form MangaDetailsFrame
-     */
-    public MangaDetailsFrame(String title,MangaDetails detailsManga ) {
+     * @param titleManga
+     * @param manga
+     * @param Download
+     */ 
+    public MangaDetailsFrame(String title, Manga manga) {
+        this.manga = manga;
+        this.detailsManga = this.manga.getMangaDetails();
         this.title = title;
         this.artistTextStr = detailsManga.getArtist();
         this.authorsTextStr = detailsManga.getAuthor();
@@ -122,8 +141,10 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         downloadChapter = new javax.swing.JList<>();
         jPanel5 = new javax.swing.JPanel();
         downloadButton = new javax.swing.JButton();
+        cancelBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -428,42 +449,41 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
 
         jPanel1.add(botomPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 314, 781, -1));
 
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
         downloadButton.setText("Download");
+        downloadButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                downloadButtonMouseClicked(evt);
+            }
+        });
+
+        cancelBtn.setText("Cancel");
+        cancelBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cancelBtnMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(576, Short.MAX_VALUE)
+                .addComponent(cancelBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(downloadButton)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(downloadButton, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(downloadButton)
+                .addComponent(cancelBtn))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 7, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10))
-        );
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 626, 781, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -481,6 +501,44 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
         this.removeSelectedChapter(selectedChapter);
         this.setSelectedMangaChapter(selectedChapterListMangaTitle);
     }//GEN-LAST:event_removeBtnMouseClicked
+
+    private void downloadButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_downloadButtonMouseClicked
+        this.detailsManga.setChapters(selectedChapterDownload);
+        ArrayList<Download> download =  this.getDownload();
+        Download downloadManga = new Download(manga);
+        download.add(downloadManga);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        String currDate = dateFormat.format(date); 
+        
+        String chapterList = "";
+        ArrayList<Chapter> chap = manga.getMangaDetails().getChapters();
+        for(int i = 0 ; i < chap.size(); i++){
+            if(i != chap.size()-1){
+                chapterList = chapterList + chap.get(i).getChapterTitle()+",";
+            }else {
+                chapterList = chapterList + chap.get(i).getChapterTitle();
+            }
+        }
+        JTable tableDownload = getjTableDownload();
+        String titleManga = manga.getTitle();
+        String mangaSite = this.getConfig().getMangaSite();
+        String statusDownload = "downloading...";
+        
+        String currentChapter = manga.getMangaDetails().getChapters().get(0).getChapterTitle();
+ 
+        Object[] row = { titleManga, mangaSite, statusDownload,currDate, chapterList, currentChapter,"",""};
+
+        DefaultTableModel model = (DefaultTableModel) tableDownload.getModel();
+        model.addRow(row);
+        this.dispose();
+        //DownloadUtil asd = this.getUtilDowload();
+        //asd.download(tableDownload, downloadManga);        
+    }//GEN-LAST:event_downloadButtonMouseClicked
+
+    private void cancelBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelBtnMouseClicked
+        this.dispose();
+    }//GEN-LAST:event_cancelBtnMouseClicked
 
     
     /**
@@ -611,6 +669,7 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel artistText;
     private javax.swing.JLabel authorsText;
     private javax.swing.JPanel botomPanel;
+    private javax.swing.JButton cancelBtn;
     private javax.swing.JList<String> chapterList;
     private javax.swing.JLabel coverImage;
     private javax.swing.JTextField descField;
@@ -649,4 +708,26 @@ public class MangaDetailsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel statusText;
     private javax.swing.JLabel titleText;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public ArrayList<Download> getDownload() {
+       return download;
+    }
+
+    @Override
+    public JTable getjTableDownload() {
+        return jTableDownload;
+    }
+
+    @Override
+    public DownloaderConfig getConfig() {
+        return dataConfig;
+    }
+
+    @Override
+    public DownloadUtil getUtilDowload() {
+       return utilDownloadImage;
+    }
+
+   
 }

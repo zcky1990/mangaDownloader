@@ -15,13 +15,17 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author soeltan_z
  */
 public class Util {
-    public void generateConfig(){
+    public void generateConfig() throws JSONException{
+        String path = System.getProperty("user.dir").toString();
         String config = "[\n" +
                         "  {\n" +
                         "    \"manga_site\": \"MangaHere\",\n" +
@@ -35,9 +39,30 @@ public class Util {
                         "    }\n" +
                         "  }\n" +
                         "]";
+        JSONArray array = new JSONArray(config);
+
          try{
             PrintWriter writer = new PrintWriter("config_manga", "UTF-8");
-            writer.println(config);
+            writer.println(array);
+            writer.close();
+         } catch (IOException e) {
+
+        }
+    }
+    
+    public void generateSystemSetting() throws JSONException{
+        String path = System.getProperty("user.dir").toString();
+        JSONArray mangaList = new JSONArray();
+        mangaList.put("Manga Here");
+        
+        JSONObject obj = new JSONObject();
+            obj.put("destinationPath", path);
+            obj.put("mangaList", mangaList);
+        
+
+         try{
+            PrintWriter writer = new PrintWriter("configDownload", "UTF-8");
+            writer.println(obj);
             writer.close();
          } catch (IOException e) {
 
