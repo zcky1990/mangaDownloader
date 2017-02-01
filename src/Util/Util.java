@@ -59,7 +59,16 @@ public class Util {
             obj.put("destinationPath", path);
             obj.put("mangaList", mangaList);
         
-
+        JSONArray mangaSiteSelected = new JSONArray();
+        
+        JSONObject mangaHereSiteselected = new JSONObject();
+        mangaHereSiteselected.put("mangaSite", "Manga Here");
+        mangaHereSiteselected.put("isSelected", true);
+        
+        mangaSiteSelected.put(mangaHereSiteselected);
+        
+        obj.put("selectedMangaSite", mangaSiteSelected);
+        
          try{
             PrintWriter writer = new PrintWriter("configDownload", "UTF-8");
             writer.println(obj);

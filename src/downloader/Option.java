@@ -6,28 +6,55 @@
 package downloader;
 
 import config.DownloaderConfig;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.JFileChooser;
+import model.SelectedMangaOption;
 
 /**
  *
  * @author soeltan_z
  */
-public class Option extends javax.swing.JFrame {
+public final class Option extends javax.swing.JFrame {
    private static DownloaderConfig config;
+   private ArrayList<SelectedMangaOption > mangaList; 
     /**
      * Creates new form Option
      */
-    public Option(DownloaderConfig config) {
-        this.config = config;
+    public Option(DownloaderConfig Config) {
+        config = Config;
         initComponents();
-        destinationField.setText(this.config.getPath());
+        mangaList = config.getSelectedmangaList();
+        this.selectedMangaListOption();
+        destinationField.setText(config.getPath());
     }
     
     public Option() {
         initComponents();
-        
     }
 
+    public void selectedMangaListOption(){
+        for(int i = 0 ; i < mangaList.size(); i++){
+            SelectedMangaOption mangaSite = mangaList.get(i);
+            boolean isSelected = mangaSite.isIsSelected();
+            String site = mangaSite.getMangaSite();
+            this.setChekBox(isSelected, site);
+        }
+                      
+    }
+    
+    public void setChekBox (boolean isSelected , String site){
+        if(site.equalsIgnoreCase("Manga Here")){
+           mangaHere.setSelected(isSelected);
+        }
+        if(site.equalsIgnoreCase("Manga Fox")){
+           mangaFox.setSelected(isSelected);
+        }
+        if(site.equalsIgnoreCase("Manga Reader")){
+           mangaReader.setSelected(isSelected);
+        }
+    
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -39,10 +66,9 @@ public class Option extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
+        mangaHere = new javax.swing.JCheckBox();
+        mangaFox = new javax.swing.JCheckBox();
+        mangaReader = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -54,13 +80,16 @@ public class Option extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Setting");
 
-        jCheckBox1.setText("jCheckBox1");
+        mangaHere.setText("Manga Here");
+        mangaHere.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mangaHereActionPerformed(evt);
+            }
+        });
 
-        jCheckBox2.setText("jCheckBox2");
+        mangaFox.setText("Manga Fox");
 
-        jCheckBox3.setText("jCheckBox2");
-
-        jCheckBox4.setText("jCheckBox2");
+        mangaReader.setText("Manga Reader");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -69,24 +98,21 @@ public class Option extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2)
-                    .addComponent(jCheckBox3)
-                    .addComponent(jCheckBox4))
-                .addContainerGap(300, Short.MAX_VALUE))
+                    .addComponent(mangaHere)
+                    .addComponent(mangaFox)
+                    .addComponent(mangaReader))
+                .addContainerGap(263, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addComponent(jCheckBox1)
+                .addComponent(mangaHere)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox2)
+                .addComponent(mangaFox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox3)
-                .addGap(18, 18, 18)
-                .addComponent(jCheckBox4)
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addComponent(mangaReader)
+                .addContainerGap(96, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Manga List", jPanel1);
@@ -95,7 +121,7 @@ public class Option extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 412, Short.MAX_VALUE)
+            .addGap(0, 388, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,8 +172,18 @@ public class Option extends javax.swing.JFrame {
         );
 
         svBtnOpt.setText("Save");
+        svBtnOpt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                svBtnOptActionPerformed(evt);
+            }
+        });
 
         cnlBtn.setText("Cancel");
+        cnlBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cnlBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -157,15 +193,16 @@ public class Option extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTabbedPane1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(cnlBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(svBtnOpt)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(cnlBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(svBtnOpt)
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,16 +228,13 @@ public class Option extends javax.swing.JFrame {
 
     private void browseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseBtnActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        String path = this.config.getPath();
+        String path = config.getPath();
         fileChooser.setCurrentDirectory(new java.io.File(path));
         fileChooser.setDialogTitle("Select Destination Folder");
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
         fileChooser.setAcceptAllFileFilterUsed(false);    
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
-            //fileChooser.getCurrentDirectory();
             String newPath = fileChooser.getSelectedFile().toString();
-            this.config.setPath(newPath);
             destinationField.setText(newPath);
           }
         else {
@@ -208,6 +242,36 @@ public class Option extends javax.swing.JFrame {
           }
        
     }//GEN-LAST:event_browseBtnActionPerformed
+
+    private void svBtnOptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svBtnOptActionPerformed
+        String newPath = destinationField.getText();
+        config.setPath(newPath);
+        
+    }//GEN-LAST:event_svBtnOptActionPerformed
+
+    private void mangaHereActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mangaHereActionPerformed
+        boolean isSelected = mangaHere.isSelected();
+        SelectedMangaOption mangalistSelected = null;
+        for(int i = 0 ; i < this.mangaList.size(); i++){
+          SelectedMangaOption listSelected = this.mangaList.get(i);
+          String mangaSite = mangalistSelected.getMangaSite();
+          if(mangaSite.equalsIgnoreCase("Manga Here")){
+            mangalistSelected = listSelected;
+            break;
+          }
+        }
+        if(isSelected){
+            mangaHere.setSelected(false);
+            mangalistSelected.setIsSelected(false);
+        }else {
+            mangaHere.setSelected(true);
+            mangalistSelected.setIsSelected(true);
+        }
+    }//GEN-LAST:event_mangaHereActionPerformed
+
+    private void cnlBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cnlBtnActionPerformed
+          this.dispose();
+    }//GEN-LAST:event_cnlBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -248,15 +312,15 @@ public class Option extends javax.swing.JFrame {
     private javax.swing.JButton browseBtn;
     private javax.swing.JButton cnlBtn;
     private javax.swing.JTextField destinationField;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JCheckBox mangaFox;
+    private javax.swing.JCheckBox mangaHere;
+    private javax.swing.JCheckBox mangaReader;
     private javax.swing.JButton svBtnOpt;
     // End of variables declaration//GEN-END:variables
+
 }

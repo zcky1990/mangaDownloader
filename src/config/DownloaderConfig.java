@@ -7,6 +7,9 @@ package config;
 
 import static downloader.MangaDownloader.util;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import model.SelectedMangaOption;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +30,7 @@ public class DownloaderConfig {
     private JSONObject downloaderConfiguration;
     private String path;
     private String [] mangaList;
+    private ArrayList<SelectedMangaOption > selectedmangaList;
     
     public void setMangaConfig(String defaultMangaSite) throws JSONException, IOException{
         String test = util.requestFile("config_manga");
@@ -77,10 +81,19 @@ public class DownloaderConfig {
         
         if(downloaderConfiguration.has("mangaList")){
             JSONArray mangaListArray =  downloaderConfiguration.getJSONArray("mangaList");
-            System.out.println(mangaListArray.get(0));
             mangaList = new String [mangaListArray.length()];
             for(int i= 0 ;i < mangaListArray.length(); i++){
                 mangaList[i] = mangaListArray.get(i).toString();
+            }
+        }
+        
+        
+        selectedmangaList = new ArrayList<SelectedMangaOption >();
+        if(downloaderConfiguration.has("selectedMangaSite")){
+         JSONArray selectedSite =  downloaderConfiguration.getJSONArray("selectedMangaSite");
+         for(int i= 0 ;i < selectedSite.length(); i++){
+               JSONObject selectedMangaSite = selectedSite.getJSONObject(i);
+               selectedmangaList.add(new SelectedMangaOption(selectedMangaSite.getBoolean("isSelected"),selectedMangaSite.getString("mangaSite")));
             }
         }
         
@@ -172,6 +185,14 @@ public class DownloaderConfig {
 
     public void setMangaList(String[] mangaList) {
         this.mangaList = mangaList;
+    }
+
+    public ArrayList<SelectedMangaOption > getSelectedmangaList() {
+        return selectedmangaList;
+    }
+
+    public void setSelectedmangaList(ArrayList<SelectedMangaOption > selectedmangaList) {
+        this.selectedmangaList = selectedmangaList;
     }
     
     
