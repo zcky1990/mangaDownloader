@@ -3,11 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/model/SelectedMangaOption.java</file>
-            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/config/DownloaderConfig.java</file>
-            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/option/option.java</file>
-            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/downloader/Option.java</file>
-            <file>file:/Users/soeltan_z/protoTypeApp/mangaDownloader/src/Util/Util.java</file>
+            <file>file:/Users/zacky/Documents/github/src/config/DownloaderConfig.java</file>
+            <file>file:/Users/zacky/Documents/github/src/downloader/NewClass.java</file>
+            <file>file:/Users/zacky/Documents/github/src/downloader/MangaDownloader.java</file>
         </group>
     </open-files>
 </project-private>

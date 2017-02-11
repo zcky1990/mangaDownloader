@@ -19,6 +19,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+
+
 /**
  *
  * @author soeltan_z
@@ -27,6 +29,7 @@ public class MangaDownloaderAPI {
     
 public Document connectToMangaSite (String url){
         Document doc = null;
+
         try {
             doc = Jsoup.connect(url).header("Accept-Encoding", "gzip, deflate")
             .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
@@ -36,19 +39,21 @@ public Document connectToMangaSite (String url){
         } catch (IOException ex) {
             Logger.getLogger(MangaDownloaderController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("doc" + doc);
         return doc;
     }
     
     
     public ArrayList<Manga> getMangaList (Document doc, String classId) throws JSONException{
-    ArrayList<Manga> mangaList = new ArrayList<Manga>();
-    Elements listManga = doc.getElementsByClass(classId);
-    for (Element mangalist : listManga) {
-      String linkHref = mangalist.attr("href");
-      String linkText = mangalist.text();
-      Manga manga = new Manga(linkHref, linkText);
-      mangaList.add(manga);
-    }
+        ArrayList<Manga> mangaList = new ArrayList<Manga>();
+        Elements listManga = doc.getElementsByClass(classId);
+        System.err.println("listManga" + listManga);
+        for (Element mangalist : listManga) {
+          String linkHref = mangalist.attr("href");
+          String linkText = mangalist.text();
+          Manga manga = new Manga(linkHref, linkText);
+          mangaList.add(manga);
+        }
     return mangaList;
     }
     

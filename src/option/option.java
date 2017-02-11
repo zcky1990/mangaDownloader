@@ -55,11 +55,21 @@ public class option {
     }
     
     public void getmangaList() throws JSONException, IOException{
-        this.mangaList = utility.readMangaList(this.config.getMangaSite());
+        //read manga list from file
+        this.mangaList = utility.readMangaList(this.config.getMangaSite());       
+        //if check if list not empty
             if(!(this.mangaList.size()> 0)){   
+                //if empt list then genrate new list from website
                 utility.generateMangaList(this.config.getMangaSite(), this.config.getManga_url(), this.config.getManga_list());
+                //read manga list from generate list
                 this.mangaList = utility.readMangaList(this.config.getMangaSite());
             }
+    }
+    
+    public void updateMangaList() throws JSONException, IOException{
+                utility.generateMangaList(this.config.getMangaSite(), this.config.getManga_url(), this.config.getManga_list());
+                this.mangaList = utility.readMangaList(this.config.getMangaSite());
+                this.generateListItem();
     }
     
     public void generateListItem(){

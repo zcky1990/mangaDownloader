@@ -14,10 +14,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import model.Chapter;
 import model.Download;
@@ -42,32 +45,24 @@ public class MangaDownloader extends javax.swing.JFrame {
      private static DownloaderConfig config;
      private static DownloadUtil utilDownload;
      private static ArrayList<Download> downloadedManga;
+
     /**
      * Creates new form MangaDownloader
      */
      
     public boolean getConfig() throws JSONException, IOException{
         boolean isSuccesSetConfig = false;
-        
-        //get option configuration to get selected mangaSite
-        String optionConfig = util.requestFile("option");
-        String defaultMangaSite = null;
-        if(optionConfig.equalsIgnoreCase("fileNotFound")){
-            defaultMangaSite = "MangaHere";
-        }else {
-         
-        }
-     
+             
         //set mangasite to config
-        this.config.setMangaConfig(defaultMangaSite);
-       // System.out.println("getMangaSite "+ this.config.getMangaSite());
-        this.opt.setDefaultMangaSite(defaultMangaSite);
+        this.config.setMangaConfig();
+        this.opt.setDefaultMangaSite(this.config.getDefaultMangaSite());
         
-        //
+        System.out.println(this.config.getMangaSite());
+        
+        //used to chek if mangaList file exits or not
         String mangaList = util.requestFile(this.config.getMangaSite());
-       // System.out.println("mangaList.length()" + mangaList.length());
         
-        if(!this.config.getMangaSite().isEmpty() && mangaList.length() > 12){
+        if(!this.config.getMangaSite().isEmpty() && !mangaList.equalsIgnoreCase("fileNotFound")){
             isSuccesSetConfig = true;
         }
      
@@ -99,11 +94,21 @@ public class MangaDownloader extends javax.swing.JFrame {
         strings = this.opt.getListManga();
         searchIndex = new ArrayList<Integer>();
         initComponents();
-        
+
+        BufferedImage img = null;
+        URL url =getClass().getResource("/downloader/header.png");
+        try {
+            img = ImageIO.read(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Image dimg = img.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(),Image.SCALE_SMOOTH);
+        ImageIcon imageIcon = new ImageIcon(dimg);
+        jLabel1.setIcon(imageIcon);
         //set dropdown to select mangalist
-        String [] list = this.config.getMangaList();
-        mangaListBox.setModel(new javax.swing.DefaultComboBoxModel<>(list));
-        
+//        String [] list = this.config.getMangaList();
+//        mangaListBox.setModel(new javax.swing.DefaultComboBoxModel<>(list));
+//        
         
         //set set mangalist
         listOfManga.setModel(new javax.swing.AbstractListModel<String>() {      
@@ -126,10 +131,9 @@ public class MangaDownloader extends javax.swing.JFrame {
         top = new javax.swing.JPanel();
         updtList = new javax.swing.JButton();
         settingBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         bottom = new javax.swing.JPanel();
         left = new javax.swing.JPanel();
-        listPane = new javax.swing.JPanel();
-        mangaListBox = new javax.swing.JComboBox<>();
         searchPane = new javax.swing.JPanel();
         searchField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
@@ -137,14 +141,21 @@ public class MangaDownloader extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listOfManga = new javax.swing.JList<>();
         right = new javax.swing.JPanel();
+        updateStatusTxt = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         downloadTabel = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Manga Here Downloader");
+        setBackground(new java.awt.Color(255, 255, 255));
 
         updtList.setText("Update Manga List");
+        updtList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updtListActionPerformed(evt);
+            }
+        });
 
-        settingBtn.setForeground(new java.awt.Color(255, 255, 255));
         settingBtn.setText("Setting");
         settingBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -156,38 +167,31 @@ public class MangaDownloader extends javax.swing.JFrame {
         top.setLayout(topLayout);
         topLayout.setHorizontalGroup(
             topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 720, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topLayout.createSequentialGroup()
+                .addContainerGap(701, Short.MAX_VALUE)
+                .addComponent(updtList, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(topLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(updtList, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(560, Short.MAX_VALUE)))
-            .addGroup(topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(topLayout.createSequentialGroup()
-                    .addGap(177, 177, 177)
-                    .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(399, Short.MAX_VALUE)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1015, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         topLayout.setVerticalGroup(
             topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 110, Short.MAX_VALUE)
+            .addGroup(topLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(settingBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                    .addComponent(updtList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
             .addGroup(topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(topLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(updtList, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                    .addContainerGap()))
-            .addGroup(topLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(topLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(settingBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                    .addContainerGap()))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(12, Short.MAX_VALUE)))
         );
-
-        listPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Manga List", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
-        listPane.setLayout(new java.awt.GridLayout(1, 0));
-
-        mangaListBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        listPane.add(mangaListBox);
 
         searchPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Search", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
         searchPane.setLayout(new javax.swing.BoxLayout(searchPane, javax.swing.BoxLayout.LINE_AXIS));
@@ -239,7 +243,9 @@ public class MangaDownloader extends javax.swing.JFrame {
         );
         mangaListPaneLayout.setVerticalGroup(
             mangaListPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mangaListPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout leftLayout = new javax.swing.GroupLayout(left);
@@ -249,22 +255,20 @@ public class MangaDownloader extends javax.swing.JFrame {
             .addComponent(mangaListPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(leftLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(listPane, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                    .addComponent(searchPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(searchPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         leftLayout.setVerticalGroup(
             leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(leftLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(listPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(mangaListPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
+
+        updateStatusTxt.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
         downloadTabel.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -288,7 +292,10 @@ public class MangaDownloader extends javax.swing.JFrame {
         right.setLayout(rightLayout);
         rightLayout.setHorizontalGroup(
             rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rightLayout.createSequentialGroup()
+                .addContainerGap(529, Short.MAX_VALUE)
+                .addComponent(updateStatusTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(rightLayout.createSequentialGroup()
                     .addContainerGap()
@@ -297,12 +304,15 @@ public class MangaDownloader extends javax.swing.JFrame {
         );
         rightLayout.setVerticalGroup(
             rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 448, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rightLayout.createSequentialGroup()
+                .addContainerGap(460, Short.MAX_VALUE)
+                .addComponent(updateStatusTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(rightLayout.createSequentialGroup()
                     .addGap(9, 9, 9)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(19, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 445, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(36, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout bottomLayout = new javax.swing.GroupLayout(bottom);
@@ -316,41 +326,33 @@ public class MangaDownloader extends javax.swing.JFrame {
             .addGroup(bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(bottomLayout.createSequentialGroup()
                     .addComponent(left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 466, Short.MAX_VALUE)))
+                    .addGap(0, 764, Short.MAX_VALUE)))
         );
         bottomLayout.setVerticalGroup(
             bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bottomLayout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bottomLayout.createSequentialGroup()
                 .addComponent(right, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(bottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(bottomLayout.createSequentialGroup()
-                    .addContainerGap()
                     .addComponent(left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(22, Short.MAX_VALUE)))
+                    .addGap(0, 31, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(top, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(bottom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(top, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bottom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(top, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(bottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28))
+                .addContainerGap())
         );
 
         pack();
@@ -379,15 +381,49 @@ public class MangaDownloader extends javax.swing.JFrame {
          option.setVisible(true);
     }//GEN-LAST:event_settingBtnActionPerformed
 
+    private void updtListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updtListActionPerformed
+        updateStatusTxt.setText("Updating manga list...");
+        
+        new Thread(new Runnable() {
+            public void run() {
+               updateMangaListBox();
+            }
+        }).start();
+         
+    }//GEN-LAST:event_updtListActionPerformed
+
+    public void updateMangaListBox (){
+     try {
+           this.opt.updateMangaList();
+         } catch (JSONException ex) {
+             Logger.getLogger(MangaDownloader.class.getName()).log(Level.SEVERE, null, ex);
+         } catch (IOException ex) {
+             Logger.getLogger(MangaDownloader.class.getName()).log(Level.SEVERE, null, ex);
+         }
+       
+        this.opt.generateListItem();
+        strings = this.opt.getListManga();
+         //set set mangalist
+        listOfManga.setModel(new javax.swing.AbstractListModel<String>() {      
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listOfManga.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane1.setViewportView(listOfManga);
+        updateStatusTxt.setText("Done Updating Manga List.");
+         try {
+             Thread.sleep(10000);
+             updateStatusTxt.setVisible(false);
+         } catch (InterruptedException ex) {
+             Logger.getLogger(MangaDownloader.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
+    
     public void getSelectedMangaDescription(int index){
         try {
-             //TODO add your handling code here:
-            // System.out.println("index " + index);
              ArrayList<Manga> mangaList = this.opt.getMangaList();
              Manga manga = mangaList.get(index);
-            // System.out.println("url " + manga.getUrlManga());
-            // System.out.println("title Manga " + manga.getTitle());
-             
+
              //get Manga Description
              MangaDetails detailsManga = this.controller.getMangaDescription( manga.getUrlManga(),this.config.getDescription());
              
@@ -479,18 +515,18 @@ public class MangaDownloader extends javax.swing.JFrame {
     private javax.swing.JPanel bottom;
     private static javax.swing.JTable downloadTabel;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel left;
     private javax.swing.JList<String> listOfManga;
-    private javax.swing.JPanel listPane;
-    private javax.swing.JComboBox<String> mangaListBox;
     private javax.swing.JPanel mangaListPane;
     private javax.swing.JPanel right;
     private javax.swing.JTextField searchField;
     private javax.swing.JPanel searchPane;
     private javax.swing.JButton settingBtn;
     private javax.swing.JPanel top;
+    private javax.swing.JLabel updateStatusTxt;
     private javax.swing.JButton updtList;
     // End of variables declaration//GEN-END:variables
 

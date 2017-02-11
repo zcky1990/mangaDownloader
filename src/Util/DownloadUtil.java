@@ -28,6 +28,11 @@ public class DownloadUtil {
     JTable downloadTabel;
     MangaDownloaderAPI controller;
     
+    
+    public DownloadUtil() {
+
+    }
+    
     public DownloadUtil(DownloaderConfig config, JTable downloadTabel , MangaDownloaderAPI controller) {
         this.downloadTabel =downloadTabel;
         this.config = config;
@@ -58,8 +63,9 @@ public class DownloadUtil {
     
     }
     
-    public void downLoadImage(String url, String title, String chapterName, String imageName, String destinationPath){
+    public String downLoadImage(String url, String title, String chapterName, String imageName, String destinationPath){
      BufferedImage image = null;
+     String status="";
       if(destinationPath.equalsIgnoreCase("")){
                 destinationPath = System.getProperty("user.dir").toString();
             }
@@ -67,30 +73,28 @@ public class DownloadUtil {
             String output = destinationPath+"/"+title+"/"+chapterName+"/"+imageName+".png";  
             File theDir = new File( destinationPath+"/"+title+"/"+chapterName);
 
-            if (!theDir.exists()) {
-                System.out.println("creating directory: " +  destinationPath+"/"+chapterName);
-                boolean result = false;
+           if (!theDir.exists()) {
+               System.out.println("status create "+theDir.canWrite());
+            if (theDir.mkdir()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+                 status = "failed to create folder";
+            }
+        }
+          if(!status.equalsIgnoreCase("failed to create folder")){
+                try {
 
-                try{
-                    theDir.mkdir();
-                    result = true;
-                } 
-                catch(SecurityException se){
-                    //handle it
-                }        
-                if(result) {    
-                    System.out.println("DIR created");  
+                    URL imageUrl = new URL(url);
+                    image = ImageIO.read(imageUrl);
+                    ImageIO.write(image, "png",new File(output));
+                    status = "success";
+                } catch (IOException e) {
+                        e.printStackTrace();
+                    status = e.getMessage();
                 }
-        }
-        try {
-
-            URL imageUrl = new URL(url);
-            image = ImageIO.read(imageUrl);
-            ImageIO.write(image, "png",new File(output));
-
-        } catch (IOException e) {
-        	e.printStackTrace();
-        }
+          }
+          return status;
     }
    
 }

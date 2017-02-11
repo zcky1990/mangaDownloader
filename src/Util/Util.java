@@ -28,10 +28,21 @@ public class Util {
         String path = System.getProperty("user.dir").toString();
         String config = "[\n" +
                         "  {\n" +
-                        "    \"manga_site\": \"MangaHere\",\n" +
+                        "    \"manga_site\": \"Manga Here\",\n" +
                         "    \"manga_url\":\"http://www.mangahere.co/mangalist/\",\n" +
                         "    \"config\": {\n" +
                         "      \"manga_list\": \"manga_info\",\n" +
+                        "      \"description\": \"manga_detail_top\",\n" +
+                        "      \"chapter\": \"detail_list\",\n" +
+                        "      \"pages\": \"wid60\",\n" +
+                        "      \"image\": \"viewer\"\n" +
+                        "    }\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"manga_site\": \"Manga Fox\",\n" +
+                        "    \"manga_url\":\"http://mangafox.me/manga/\",\n" +
+                        "    \"config\": {\n" +
+                        "      \"manga_list\": \"series_preview\",\n" +
                         "      \"description\": \"manga_detail_top\",\n" +
                         "      \"chapter\": \"detail_list\",\n" +
                         "      \"pages\": \"wid60\",\n" +
@@ -52,12 +63,10 @@ public class Util {
     
     public void generateSystemSetting() throws JSONException{
         String path = System.getProperty("user.dir").toString();
-        JSONArray mangaList = new JSONArray();
-        mangaList.put("Manga Here");
         
         JSONObject obj = new JSONObject();
-            obj.put("destinationPath", path);
-            obj.put("mangaList", mangaList);
+        obj.put("destinationPath", path);
+        obj.put("defaultMangaSite", "Manga Here");
         
         JSONArray mangaSiteSelected = new JSONArray();
         

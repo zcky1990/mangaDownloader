@@ -532,8 +532,11 @@ public class MangaDetailsFrame extends javax.swing.JFrame implements downloadLis
         DefaultTableModel model = (DefaultTableModel) tableDownload.getModel();
         model.addRow(row);
         this.dispose();
-        //DownloadUtil asd = this.getUtilDowload();
-        //asd.download(tableDownload, downloadManga);        
+    
+         DownloadUtil asd = getUtilDowload();
+         asd.download(tableDownload, downloadManga);
+
+                
     }//GEN-LAST:event_downloadButtonMouseClicked
 
     private void cancelBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelBtnMouseClicked

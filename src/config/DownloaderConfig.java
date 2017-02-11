@@ -7,6 +7,7 @@ package config;
 
 import static downloader.MangaDownloader.util;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import model.SelectedMangaOption;
@@ -31,8 +32,9 @@ public class DownloaderConfig {
     private String path;
     private String [] mangaList;
     private ArrayList<SelectedMangaOption > selectedmangaList;
+    private String defaultMangaSite;
     
-    public void setMangaConfig(String defaultMangaSite) throws JSONException, IOException{
+    public void setMangaConfig() throws JSONException, IOException{
         String test = util.requestFile("config_manga");
         if(test.equalsIgnoreCase("fileNotFound")){
             util.generateConfig();
@@ -50,6 +52,28 @@ public class DownloaderConfig {
         }else {
             mangaConfiguration = new JSONArray();
         }
+        
+               
+        if(!downloadConfig.equalsIgnoreCase("fileNotFound")){
+            downloaderConfiguration = new JSONObject(downloadConfig);
+        }else {
+            downloaderConfiguration = new JSONObject();
+        }
+        
+        //get active mangaSite
+        if(downloaderConfiguration.has("defaultMangaSite")){
+            defaultMangaSite = downloaderConfiguration.getString("defaultMangaSite");
+        }else {
+            defaultMangaSite = "Manga Here";
+        }
+        if(downloaderConfiguration.has("destinationPath")){
+            path = downloaderConfiguration.getString("destinationPath");
+        }else {
+            path = System.getProperty("user.dir").toString();
+        }
+        
+        System.out.println(""+mangaConfiguration);
+        //setActiveMangaSite and set all  jsoup parsing config
         for(int i = 0 ; i < mangaConfiguration.length(); i++){
             JSONObject mangaConfig = mangaConfiguration.getJSONObject(i);
             String siteManga = mangaConfig.getString("manga_site");
@@ -66,37 +90,51 @@ public class DownloaderConfig {
                 break;
             }
         }
-        
-        if(!downloadConfig.equalsIgnoreCase("fileNotFound")){
-            downloaderConfiguration = new JSONObject(downloadConfig);
-        }else {
-            downloaderConfiguration = new JSONObject();
-        }
-        
-        if(downloaderConfiguration.has("destinationPath")){
-            path = downloaderConfiguration.getString("destinationPath");
-        }else {
-            path = System.getProperty("user.dir").toString();
-        }
-        
-        if(downloaderConfiguration.has("mangaList")){
-            JSONArray mangaListArray =  downloaderConfiguration.getJSONArray("mangaList");
-            mangaList = new String [mangaListArray.length()];
-            for(int i= 0 ;i < mangaListArray.length(); i++){
-                mangaList[i] = mangaListArray.get(i).toString();
-            }
-        }
-        
-        
+                
         selectedmangaList = new ArrayList<SelectedMangaOption >();
+        
+        ArrayList<String> selectedMangaSiteArray = new ArrayList<String>();
         if(downloaderConfiguration.has("selectedMangaSite")){
          JSONArray selectedSite =  downloaderConfiguration.getJSONArray("selectedMangaSite");
          for(int i= 0 ;i < selectedSite.length(); i++){
                JSONObject selectedMangaSite = selectedSite.getJSONObject(i);
+               boolean isSelected = selectedMangaSite.getBoolean("isSelected");
+               if(isSelected){
+                    selectedMangaSiteArray.add(selectedMangaSite.getString("mangaSite"));
+               }
                selectedmangaList.add(new SelectedMangaOption(selectedMangaSite.getBoolean("isSelected"),selectedMangaSite.getString("mangaSite")));
             }
         }
         
+        //add selected manga site as list of site manga available
+        mangaList = new String [selectedMangaSiteArray.size()];
+            for(int i= 0 ;i < selectedMangaSiteArray.size(); i++){
+                mangaList[i] = selectedMangaSiteArray.get(i).toString();
+            }
+        
+    }
+    
+    public void saveConfig() throws JSONException{
+        JSONObject obj = new JSONObject();
+        obj.put("destinationPath", this.path);
+        
+        JSONArray mangaSiteSelected = new JSONArray();
+        for(int i = 0; i < selectedmangaList.size();i++){
+            SelectedMangaOption mngOptSel = selectedmangaList.get(i);          
+            JSONObject mangaHereSiteselected = new JSONObject();
+            mangaHereSiteselected.put("mangaSite", mngOptSel.getMangaSite());
+            mangaHereSiteselected.put("isSelected", mngOptSel.isIsSelected());
+            mangaSiteSelected.put(mangaHereSiteselected);
+        }
+         obj.put("selectedMangaSite", mangaSiteSelected);
+         
+         try{
+            PrintWriter writer = new PrintWriter("configDownload", "UTF-8");
+            writer.println(obj);
+            writer.close();
+         } catch (IOException e) {
+
+        }
     }
 
     public String getMangaSite() {
@@ -193,6 +231,14 @@ public class DownloaderConfig {
 
     public void setSelectedmangaList(ArrayList<SelectedMangaOption > selectedmangaList) {
         this.selectedmangaList = selectedmangaList;
+    }
+
+    public String getDefaultMangaSite() {
+        return defaultMangaSite;
+    }
+
+    public void setDefaultMangaSite(String defaultMangaSite) {
+        this.defaultMangaSite = defaultMangaSite;
     }
     
     

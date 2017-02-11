@@ -29,7 +29,7 @@ public class MangaUtility {
         MangaDownloaderAPI zaki = new MangaDownloaderAPI();
         Document doc = zaki.connectToMangaSite(mangaUrl);
         ArrayList<Manga> mangaList = zaki.getMangaList(doc, classId);
-        
+        System.out.println("mangaList" +mangaList.size());
         try{
             PrintWriter writer = new PrintWriter(mangaSite, "UTF-8");
             generateText(writer,mangaList );
