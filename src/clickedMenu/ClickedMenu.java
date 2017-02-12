@@ -5,11 +5,15 @@
  */
 package clickedMenu;
 
+import Util.DownloadUtil;
+import downloadTask.DownloadTask;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
+import model.Download;
 
 /**
  *
@@ -23,18 +27,20 @@ public class ClickedMenu extends JPopupMenu {
      JMenuItem  remove;
      int [] numbOfRowSelected;
     javax.swing.JTable jTableDownload;
+    DownloadUtil utilDownload;
      
-    public ClickedMenu(javax.swing.JTable jTableDownload, String status, boolean multipleSelection, int[] numbOfRowSelected){
+    public ClickedMenu(int row, javax.swing.JTable jTableDownload, String status, boolean multipleSelection, int[] numbOfRowSelected, ArrayList<Download> downloadedManga, DownloadUtil utilDownload){
         start = new JMenuItem("Start Download");
-        stop = new JMenuItem("Stop Download");
+       // stop = new JMenuItem("Stop Download");
         remove = new JMenuItem("Remove");
         this.numbOfRowSelected = numbOfRowSelected;
         this.jTableDownload = jTableDownload;
         
         add(start);
-        add(stop);
+       // add(stop);
         add(remove);
         
+        this.utilDownload = utilDownload;
         
         setEnableDisableStartStopMenu(status ,multipleSelection);
         setEnableDisableRemoveMenu(status ,multipleSelection);
@@ -63,9 +69,26 @@ public class ClickedMenu extends JPopupMenu {
                             model.addRow(emptyRow);
                         }
                     }
+                }  
+            }
+        });
+       
+       start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DefaultTableModel model = (DefaultTableModel) jTableDownload.getModel();
+                for(int i = 0; i < numbOfRowSelected.length;i++ ){
+                    model.setValueAt("Downloading", numbOfRowSelected[i], 2);
+                    Download download = downloadedManga.get(row);
+                         new Thread(new Runnable() {
+                        public void run() {
+                        DownloadTask downloadTask = new DownloadTask(row, utilDownload, download , model);
+                        downloadTask.run();
+                        }
+                }).start();
                     
                 }  
-                System.out.println(".actionPerformed()");
+                
             }
         });
     }
@@ -73,14 +96,14 @@ public class ClickedMenu extends JPopupMenu {
     public void setEnableDisableStartStopMenu(String status ,boolean multipleSelection ){
       if(status.equalsIgnoreCase("empty")|| multipleSelection){
            start.setEnabled(false);
-            stop.setEnabled(false);
+         //   stop.setEnabled(false);
       }else {
         if(status.equalsIgnoreCase("downloading")){
             start.setEnabled(false);
-            stop.setEnabled(true);
+       //     stop.setEnabled(true);
         }else {
              start.setEnabled(true);
-             stop.setEnabled(false);
+           //  stop.setEnabled(false);
         }
       }
     

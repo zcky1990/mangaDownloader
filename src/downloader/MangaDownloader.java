@@ -449,7 +449,7 @@ public class MangaDownloader extends javax.swing.JFrame {
                 multipleSelection = true;
             }
 
-            ClickedMenu menu = new ClickedMenu(downloadTabel, status, multipleSelection , numbOfRowSelected);
+            ClickedMenu menu = new ClickedMenu(row,downloadTabel, status, multipleSelection , numbOfRowSelected, downloadedManga , utilDownload);
             menu.show(evt.getComponent(), evt.getX(), evt.getY());
         }
    

@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import model.Chapter;
 import model.Download;
 import model.Manga;
@@ -23,7 +24,7 @@ import model.Pages;
  * @author soeltan_z
  */
 public class DownloadUtil {
-    
+    int PROGRESS_COLUMN= 6;
     DownloaderConfig config;
     JTable downloadTabel;
     MangaDownloaderAPI controller;
@@ -39,9 +40,11 @@ public class DownloadUtil {
         this.controller = controller;
     }
     
-    public void download(javax.swing.JTable table, Download download){
+    public void download(int row, DefaultTableModel model, Download download){
+        
         Manga manga = download.getManga();
         String title = manga.getTitle();
+        System.err.println("downloading "+ title);
         ArrayList<Chapter> chapter = manga.getMangaDetails().getChapters();
         MangaDownloaderAPI api = new MangaDownloaderAPI();
         String destinationPath = this.config.getPath();
@@ -56,11 +59,11 @@ public class DownloadUtil {
                 String urlImage = pageURL.get(j);
                 String url = this.controller.getImage(urlImage, this.config.getImage());
                 String imageName = ""+(j+1);
-                
+                model.setValueAt("download "+chapterName+" : "+ imageName, row, PROGRESS_COLUMN);
                 downLoadImage(url,title, chapterName ,imageName,destinationPath);
             }
         }
-    
+      model.setValueAt("Complete Download", row, 2);
     }
     
     public String downLoadImage(String url, String title, String chapterName, String imageName, String destinationPath){

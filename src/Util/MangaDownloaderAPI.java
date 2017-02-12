@@ -39,7 +39,7 @@ public Document connectToMangaSite (String url){
         } catch (IOException ex) {
             Logger.getLogger(MangaDownloaderController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("doc" + doc);
+        //System.out.println("doc" + doc);
         return doc;
     }
     
@@ -47,7 +47,7 @@ public Document connectToMangaSite (String url){
     public ArrayList<Manga> getMangaList (Document doc, String classId) throws JSONException{
         ArrayList<Manga> mangaList = new ArrayList<Manga>();
         Elements listManga = doc.getElementsByClass(classId);
-        System.err.println("listManga" + listManga);
+        //System.err.println("listManga" + listManga);
         for (Element mangalist : listManga) {
           String linkHref = mangalist.attr("href");
           String linkText = mangalist.text();
