@@ -75,7 +75,7 @@ public class DownloadUtil {
 
            if (!theDir.exists()) {
                System.out.println("status create "+theDir.canWrite());
-            if (theDir.mkdir()) {
+            if (theDir.mkdirs()) {
                 System.out.println("Directory is created!");
             } else {
                 System.out.println("Failed to create directory!");

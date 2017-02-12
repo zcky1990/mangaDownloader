@@ -523,20 +523,35 @@ public class MangaDetailsFrame extends javax.swing.JFrame implements downloadLis
         JTable tableDownload = getjTableDownload();
         String titleManga = manga.getTitle();
         String mangaSite = this.getConfig().getMangaSite();
-        String statusDownload = "downloading...";
+        String statusDownload = "Not started";
         
         String currentChapter = manga.getMangaDetails().getChapters().get(0).getChapterTitle();
  
         Object[] row = { titleManga, mangaSite, statusDownload,currDate, chapterList, currentChapter,"",""};
 
         DefaultTableModel model = (DefaultTableModel) tableDownload.getModel();
+        int numbOfRow = model.getRowCount();
+        boolean isRowAvailable = false;
+        for(int i = 0 ; i < numbOfRow;i++){
+            Object value = model.getValueAt(i, 0);
+            if(value == null){
+                model.setValueAt(titleManga, i, 0);
+                model.setValueAt(mangaSite, i, 1);
+                model.setValueAt(statusDownload, i, 2);
+                model.setValueAt(currDate, i, 3);
+                model.setValueAt(chapterList, i, 4);
+                model.setValueAt(currentChapter, i, 5);
+                model.setValueAt("", i, 6);
+                model.setValueAt("", i, 7);
+                isRowAvailable = true;
+                break;
+            }
+        }
+        if(!isRowAvailable){
         model.addRow(row);
+        }
         this.dispose();
-    
-         DownloadUtil asd = getUtilDowload();
-         asd.download(tableDownload, downloadManga);
-
-                
+        
     }//GEN-LAST:event_downloadButtonMouseClicked
 
     private void cancelBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelBtnMouseClicked
